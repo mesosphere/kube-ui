@@ -26,7 +26,8 @@ app.controller('cAdvisorController', [
                 return obj.type === 'Ready';
             })[0];
 
-            return cAdvisorService.getDataForMinion(m.metadata.name, readyCondition && readyCondition.status === 'True')
+            ready = readyCondition && readyCondition.status === 'True' && readyCondition.reason === 'KubeletReady';
+            return cAdvisorService.getDataForMinion(m.metadata.name, ready)
               .catch(function(errorData) {
                 // don't fail the whole promise chain just because one node failed
                 return null;
