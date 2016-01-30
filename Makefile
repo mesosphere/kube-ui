@@ -5,8 +5,10 @@
 .PHONY: all bindata container push clean
 
 # Keep this at dev, so no one accidentally blows away the latest published version.
-TAG = dev # current version: v5
-PREFIX = gcr.io/google_containers
+TAG ?= dev # current version: v5
+PREFIX ?= gcr.io/google_containers
+IMAGE ?= kube-ui
+GCLOUD ?= gcloud
 
 all: push
 
@@ -17,10 +19,10 @@ kube-ui: bindata server/kube-ui.go
 	CGO_ENABLED=0 GOOS=linux godep go build -a -installsuffix cgo -ldflags '-w' ./server/kube-ui.go
 
 container: kube-ui
-	docker build -t $(PREFIX)/kube-ui:$(TAG) .
+	docker build -t $(PREFIX)/$(IMAGE):$(TAG) .
 
 push: container
-	gcloud docker push $(PREFIX)/kube-ui:$(TAG)
+	docker push $(PREFIX)/$(IMAGE):$(TAG)
 
 clean:
 	rm -f kube-ui
